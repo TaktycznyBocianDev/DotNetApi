@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CSharpProjects\\dotnetapi\\DotnetAPI.csproj": {}
+    "D:\\CSharpProjects\\DotNetApi\\DotnetAPI.csproj": {}
   },
   "projects": {
-    "D:\\CSharpProjects\\dotnetapi\\DotnetAPI.csproj": {
+    "D:\\CSharpProjects\\DotNetApi\\DotnetAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CSharpProjects\\dotnetapi\\DotnetAPI.csproj",
+        "projectUniqueName": "D:\\CSharpProjects\\DotNetApi\\DotnetAPI.csproj",
         "projectName": "DotnetAPI",
-        "projectPath": "D:\\CSharpProjects\\dotnetapi\\DotnetAPI.csproj",
+        "projectPath": "D:\\CSharpProjects\\DotNetApi\\DotnetAPI.csproj",
         "packagesPath": "C:\\Users\\Stanisław\\.nuget\\packages\\",
-        "outputPath": "D:\\CSharpProjects\\dotnetapi\\obj\\",
+        "outputPath": "D:\\CSharpProjects\\DotNetApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -57,6 +57,18 @@
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[5.2.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[8.0.3, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[8.0.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
