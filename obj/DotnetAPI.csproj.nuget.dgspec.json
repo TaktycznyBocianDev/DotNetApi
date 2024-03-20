@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CSHarpprojects\\dotnetapi\\DotnetAPI.csproj": {}
+    "D:\\CSharpProjects\\dotnetapi\\DotnetAPI.csproj": {}
   },
   "projects": {
-    "D:\\CSHarpprojects\\dotnetapi\\DotnetAPI.csproj": {
+    "D:\\CSharpProjects\\dotnetapi\\DotnetAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CSHarpprojects\\dotnetapi\\DotnetAPI.csproj",
+        "projectUniqueName": "D:\\CSharpProjects\\dotnetapi\\DotnetAPI.csproj",
         "projectName": "DotnetAPI",
-        "projectPath": "D:\\CSHarpprojects\\dotnetapi\\DotnetAPI.csproj",
+        "projectPath": "D:\\CSharpProjects\\dotnetapi\\DotnetAPI.csproj",
         "packagesPath": "C:\\Users\\Stanisław\\.nuget\\packages\\",
-        "outputPath": "D:\\CSHarpprojects\\dotnetapi\\obj\\",
+        "outputPath": "D:\\CSharpProjects\\dotnetapi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
