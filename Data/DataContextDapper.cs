@@ -27,10 +27,10 @@ namespace DotnetAPI.Data
             return dbConnection.QuerySingle<T>(sql, parameters);
         }
 
-        public IEnumerable<T> LoadData<T>(string sql)
+        public IEnumerable<T> LoadData<T>(string sql, object parameters = null)
         {
             IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            return dbConnection.Query<T>(sql);
+            return dbConnection.Query<T>(sql, parameters);
         }
 
         public bool ExecuteSql(string sql, object parameters = null)
