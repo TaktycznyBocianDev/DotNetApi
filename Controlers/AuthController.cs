@@ -1,16 +1,20 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using DotnetAPI.Data;
 using DotnetAPI.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DotnetAPI.Controllers
 {
-
+    [Authorize]
     public class AuthController : ControllerBase
     {
-
+        
         private readonly DataContextDapper _dapper;
         private readonly IConfiguration _configuration;
 
@@ -20,6 +24,7 @@ namespace DotnetAPI.Controllers
             _configuration = configuration;
         }
 
+        [AllowAnonymous]
         [HttpPost("Register")]
         public IActionResult Register(UserForRegistrationDTO userForRegistration)
         {
@@ -60,12 +65,31 @@ namespace DotnetAPI.Controllers
                         PasswordSalt = passwordSalt
                     }))
                     {
+                         string sqlAddUser = @"
+                            INSERT INTO TutorialAppSchema.Users(
+                                [FirstName], 
+                                [LastName], 
+                                [Email], 
+                                [Gender])
+                            VALUES (@FirstName, 
+                                @LastName, 
+                                @Email, 
+                                @Gender)";
 
-                        return Ok();
+                        if(_dapper.ExecuteSql(sqlAddUser, new {FirstName = userForRegistration.FirstName,
+                                LastName = userForRegistration.LastName,
+                                Email = userForRegistration.Email,
+                                Gender = userForRegistration.Gender}))
+                            {
 
+                                return Ok();
+                            
+                            }
+                            
+                            throw new Exception("Failed to add user!");
                     }
 
-                    throw new Exception("Failed to add user!");
+                    throw new Exception("Failed to register user!");
                 }
 
                 throw new Exception("User with this email exists!");
@@ -76,6 +100,7 @@ namespace DotnetAPI.Controllers
 
         }
 
+        [AllowAnonymous]
         [HttpPost("Login")]
         public IActionResult Login(UserForLoginDTO userForLogin)
         {
@@ -94,9 +119,15 @@ namespace DotnetAPI.Controllers
                 }
             }
 
-            return Ok();
+            string sqlUserId = "SELECT UserId FROM TutorialAppSchema.Users WHERE Email = @Email";
+            int userId = _dapper.LoadDataSingle<int>(sqlUserId, new {Email = userForLogin.Email});
+
+            return Ok(new Dictionary<string, string> {
+                {"token", CreateToken(userId)}
+            });
         }
 
+       // [HttpGet]
 
         private byte[] GetPasswordHash(string password, byte[] passwordSalt)
         {
@@ -111,6 +142,32 @@ namespace DotnetAPI.Controllers
                 iterationCount: 1000000,
                 numBytesRequested: 256 / 8
             );
+        }
+
+        private string CreateToken(int userId)
+        {
+            Claim[] claims = new Claim[]
+            {
+                new Claim("userId", userId.ToString())
+            };
+
+            SymmetricSecurityKey tokenKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                _configuration.GetSection("AppSettings:TokenKey").Value));
+
+            SigningCredentials credentials = new SigningCredentials(tokenKey, SecurityAlgorithms.HmacSha512Signature);
+
+            SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor()
+            {
+                Subject = new ClaimsIdentity(claims),
+                SigningCredentials = credentials,
+                Expires = DateTime.Now.AddDays(1)
+            };
+
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+
+            SecurityToken token = tokenHandler.CreateToken(securityTokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
         }
 
     }

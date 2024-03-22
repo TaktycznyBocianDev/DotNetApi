@@ -9,6 +9,12 @@ namespace DotnetAPI.Dtos
         public string Password {get; set;} = "";
 
         public string PasswordConfirm {get; set;} = "";
+
+        public string FirstName {set; get;} ="";
+
+        public string LastName {set; get;} ="";
+        
+        public string Gender {set; get;} ="";
     }
 
 }
