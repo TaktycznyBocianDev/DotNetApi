@@ -62,6 +62,8 @@ app.MapControllers();
 
 app.UseAuthentication();
 
+app.UseAuthorization();
+
 // app.MapGet("/weatherforecast", () =>
 // {
 // })
