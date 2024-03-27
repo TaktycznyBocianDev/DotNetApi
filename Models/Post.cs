@@ -10,5 +10,5 @@ namespace DotnetAPI.Models
         public DateTime PostCreated {get; set;}
         public DateTime PostUpdated {get; set;}
     }
-
+ 
 }
