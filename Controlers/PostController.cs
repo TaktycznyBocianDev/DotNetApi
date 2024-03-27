@@ -106,6 +106,14 @@ namespace DotnetAPI.Controllers
             if(_dapper.ExecuteSql(sql, new {PostId = postId})) return Ok();
             throw new Exception("Failed to delete post");
         }
+        
+
+        [HttpGet("PostsBySearch/{searchParam}")]
+        public IEnumerable<Post>  PostsBySearch(string searchParam)
+        {
+            string sql = "SELECT * FROM TutorialAppSchema.Posts WHERE PostTitle LIKE @SearchParam OR PostContent LIKE @SearchParam";
+            return _dapper.LoadData<Post>(sql, new { SearchParam = "%" + searchParam + "%" });
+        }
 
     }
 
