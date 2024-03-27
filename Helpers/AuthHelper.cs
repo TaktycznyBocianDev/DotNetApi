@@ -17,7 +17,7 @@ namespace DotnetAPI.Helpers
             _configuration = config;
         }
 
-         private byte[] GetPasswordHash(string password, byte[] passwordSalt)
+        public byte[] GetPasswordHash(string password, byte[] passwordSalt)
         {
             string passwordSaltWithString =
                       _configuration.GetSection("AppSettings.PasswordKey").Value +
@@ -32,7 +32,7 @@ namespace DotnetAPI.Helpers
             );
         }
 
-        private string CreateToken(int userId)
+        public string CreateToken(int userId)
         {
             Claim[] claims = new Claim[]
             {
