@@ -111,8 +111,11 @@ namespace DotnetAPI.Controllers
         [HttpGet("PostsBySearch/{searchParam}")]
         public IEnumerable<Post>  PostsBySearch(string searchParam)
         {
-            string sql = "SELECT * FROM TutorialAppSchema.Posts WHERE PostTitle LIKE @SearchParam OR PostContent LIKE @SearchParam";
-            return _dapper.LoadData<Post>(sql, new { SearchParam = "%" + searchParam + "%" });
+            string sql = @"SELECT * 
+                        FROM TutorialAppSchema.Posts
+                        WHERE PostTitle LIKE @searchParam OR PostContent LIKE @searchParam";
+            Console.WriteLine(sql);
+            return _dapper.LoadData<Post>(sql, new { searchParam = '%' + searchParam + '%' });
         }
 
     }
