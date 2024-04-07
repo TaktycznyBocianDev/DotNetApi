@@ -20,32 +20,27 @@ namespace DotnetAPI.Controllers
             _dapper = new DataContextDapper(configuration);
         }
 
-        [HttpGet("Posts")]
-        public IEnumerable<Post> GetPosts()
+        [HttpGet("Posts/{postId}/{userId}/{searchValue}")]
+        public IEnumerable<Post> GetPosts(int postId = 0, int userId = 0, string searchValue = "none")
         {
-            string sql = "SELECT * FROM TutorialAppSchema.Posts";
-            return _dapper.LoadData<Post>(sql);
+            string sql = "EXEC TutorialAppSchema.spPosts_Get";
+            string parameters = "";
 
-        }
+            if (postId != 0) parameters += ", @PostId = @PostId";
+            if (userId != 0) parameters += ", @UserId = @UserId";
+            if (searchValue.ToLower() != "none") parameters += ", @SearchValue = @SearchValue";
 
-        [HttpGet("PostSingle/{postId}")]
-        public Post GetPostSingle(int postId)
-        {
-            string sql = "SELECT * FROM TutorialAppSchema.Posts WHERE PostId = @PostId";
-            return _dapper.LoadDataSingle<Post>(sql, new {PostId = postId});
-        }
 
-        [HttpGet("GetPostsByUser/{userId}")]
-        public IEnumerable<Post> GetPostsByUser(int userId)
-        {
-            string sql = "SELECT * FROM TutorialAppSchema.Posts WHERE UserId = @UserId";
-            return _dapper.LoadData<Post>(sql, new {UserId = userId});
+            if(parameters.StartsWith(",")) sql += parameters.Substring(1);
+
+            return _dapper.LoadData<Post>(sql, new {@PostId = postId, @UserId = userId, @SearchValue = searchValue});
+
         }
 
         [HttpGet("MyPosts")]
         public IEnumerable<Post>  GetMyPosts()
         {
-            string sql = "SELECT * FROM TutorialAppSchema.Posts WHERE UserId = @UserId";
+            string sql = "EXEC TutorialAppSchema.spPosts_Get @UserId = @UserId";
             return _dapper.LoadData<Post>(sql, new {UserId = this.User.FindFirst("userId")?.Value});
         }
 
@@ -107,17 +102,6 @@ namespace DotnetAPI.Controllers
             throw new Exception("Failed to delete post");
         }
         
-
-        [HttpGet("PostsBySearch/{searchParam}")]
-        public IEnumerable<Post>  PostsBySearch(string searchParam)
-        {
-            string sql = @"SELECT * 
-                        FROM TutorialAppSchema.Posts
-                        WHERE PostTitle LIKE @searchParam OR PostContent LIKE @searchParam";
-            Console.WriteLine(sql);
-            return _dapper.LoadData<Post>(sql, new { searchParam = '%' + searchParam + '%' });
-        }
-
     }
 
 }
