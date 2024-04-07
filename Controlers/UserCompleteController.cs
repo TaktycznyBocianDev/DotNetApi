@@ -33,11 +33,7 @@ public class UserCompleteController : ControllerBase
         {
             parameters += ", @UserId = @UserId";
         }
-        // if(isActive)
-        // {
-        //     parameters += ", @Active = @isActive";
-        // }
-
+        
          sql += parameters.Substring(1);
         
         Console.WriteLine(sql);
@@ -46,18 +42,19 @@ public class UserCompleteController : ControllerBase
 
     }
 
-    [HttpPut("EditUser")]
-    public IActionResult EditUser(User user)
+    [HttpPut("UpsertUser")]
+    public IActionResult UpsertUser(UserComplete user)
     {
-        string sql = @"
-        UPDATE TutorialAppSchema.Users 
-                SET 
-                    [FirstName] = @FirstName, 
-                    [LastName] = @LastName, 
-                    [Email] = @Email, 
-                    [Gender] = @Gender, 
-                    [Active] = @Active
-                WHERE UserId = @UserId";
+        string sql = @" EXEC TutorialAppSchema.spUser_Upsert
+                @FirstName = @FirstName, 
+                @LastName = @LastName, 
+                @Email = @Email, 
+                @Gender = @Gender, 
+                @JobTitlee = @JobTitlee
+                @Department = @Department
+                @Salary = @Salary
+                @Active = @Active
+                @UserId = @UserId";
         if(_dapper.ExecuteSql(sql, user))
         {
             return Ok();
@@ -65,29 +62,6 @@ public class UserCompleteController : ControllerBase
 
         throw new Exception("Failed to uppdate user");
         
-    }
-
-    [HttpPost("AddUser")]
-    public IActionResult AddUser(UserDTO user)
-    {
-            string sql = @"
-             INSERT INTO TutorialAppSchema.Users(
-                [FirstName], 
-                [LastName], 
-                [Email], 
-                [Gender], 
-                [Active])
-            VALUES (@FirstName, 
-                @LastName, 
-                @Email, 
-                @Gender, 
-                @Active)";
-        if(_dapper.ExecuteSql(sql, user))
-        {
-            return Ok();
-        }
-
-        throw new Exception("Failed to add user");
     }
 
     [HttpDelete("DeleteUser/{userId}")]
@@ -110,31 +84,6 @@ public class UserCompleteController : ControllerBase
         return salaries;
     }
 
-
-    [HttpPost("AddUserSalary/")]
-    public IActionResult AddUserSalary(UserSalary userSalary)
-    {
-            string sql = "INSERT INTO TutorialAppSchema.UserSalary([UserId],[Salary]) VALUES (@UserId, @Salary)";
-
-        if(_dapper.ExecuteSql(sql, userSalary))
-        {
-            return Ok();
-        }
-
-        throw new Exception("Failed to add user salary to database");
-    }
-
-    [HttpPut("EditUserSalary")]
-    public IActionResult EditUserSalary(UserSalary userSalary)
-    {
-        string sql = "UPDATE TutorialAppSchema.UserSalary SET [UserId] = @UserId, [Salary] = @Salary WHERE UserId = @userId";
-         if(_dapper.ExecuteSqlWithRowCount(sql, userSalary) > 0)
-        {
-            return Ok();
-        }
-
-        throw new Exception("No rows were updated");
-    }
     
     [HttpDelete("DeleteUserSalary/{userId}")]
     public IActionResult DeleteUserSalary(int userId)
@@ -158,31 +107,6 @@ public class UserCompleteController : ControllerBase
 
     }
     
-
-    [HttpPost("AddJobInfo")]
-    public IActionResult AddJobInfo(UserJobInfo jobInfo)
-    {
-        string sql = "INSERT INTO TutorialAppSchema.UserJobInfo([UserId],[JobTitle],[Department]) VALUES (@UserId, @JobTitle, @Department)";
-        if(_dapper.ExecuteSql(sql, jobInfo))
-        {
-            return Ok();
-        }
-
-        throw new Exception("Failed to add job info");
-    }
-
-    [HttpPut("EditJobInfo")]
-    public IActionResult EditJobInfo(UserJobInfo jobInfo)
-    {
-        string sql = "UPDATE TutorialAppSchema.UserJobInfo SET UserId = @userId, JobTitle = @jobTitle, Department = @Department WHERE UserId = @userId";
-        if(_dapper.ExecuteSql(sql, jobInfo))
-        {
-            return Ok();
-        }
-
-        throw new Exception("Failed to edit job info");
-    }
-
     [HttpDelete("DeleteJobInfo/{userId}")]
     public IActionResult DeleteJobInfo(int userId)
     {
