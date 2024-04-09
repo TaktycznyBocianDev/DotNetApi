@@ -44,61 +44,43 @@ namespace DotnetAPI.Controllers
             return _dapper.LoadData<Post>(sql, new {UserId = this.User.FindFirst("userId")?.Value});
         }
 
-        [HttpPost("AddPost")]
-        public IActionResult AddPost (PostToAddDTO postToAdd)
+
+        // TutorialAppSchema.spPosts_Upsert
+        // @UserId INT
+        // , @PostTitle NVARCHAR(255)
+        // , @PostContent NVARCHAR(MAX)
+        // , @PostId INT = NULL
+
+        [HttpPut("Post")]
+        public IActionResult UpsertPost(Post postToAdd)
         {
             string sql = @"
-            INSERT INTO TutorialAppSchema.Posts 
-                (UserId,
-                PostTitle,
-                PostContent,
-                PostCreated,
-                PostUpdated)
-            VALUES (
-                @UserId,
-                @PostTitle,
-                @PostContent,
-                GETDATE(),
-                GETDATE()
-            )";
+                EXEC TutorialAppSchema.spPosts_Upsert
+                    @UserId = @UserId,
+                    @PostTitle = @PostTitle,
+                    @PostContent = @PostContent";
+
+            if (postToAdd.PostId > 0)
+            {
+                sql += ", @PostId = @PostId";
+            }
 
             string? userId = this.User.FindFirst("userId")?.Value;
-
-            if(_dapper.ExecuteSql(sql, new {UserId = userId, 
-                PostTitle = postToAdd.PostTitle, 
-                PostContent = postToAdd.PostContent }))
+            if (_dapper.ExecuteSql(sql, new { UserId = userId, PostTitle = postToAdd.PostTitle, PostContent = postToAdd.PostContent, PostId = postToAdd.PostId }))
             {
-
                 return Ok();
-
             }
 
             throw new Exception("Failed to create new post!");
         }
 
-        [HttpPut("EditPost")]
-        public IActionResult EditPost (PostToEditDTO postToEdit)
-        {
-            string sql = @"UPDATE TutorialAppSchema.Posts SET [PostContent] = @PostContent, [PostTitle] = @PostTitle, [PostUpdated] = GETDATE() WHERE PostId = @PostId AND UserId = @UserId";
 
-            if(_dapper.ExecuteSql(sql, new {PostContent = postToEdit.PostContent, 
-            PostTitle = postToEdit.PostTitle, 
-            PostId = postToEdit.PostId, 
-            UserId = this.User.FindFirst("userId")?.Value})) 
-            {
-
-                return Ok();
-
-            }
-
-            throw new Exception("Failed to update post!");
-        }
-
-        [HttpDelete("DeletePost/{postId}")]    
+        [HttpDelete("Post/{postId}")]    
         public IActionResult DeletePost(int postId)
-        {
-            string sql = @"DELETE FROM TutorialAppSchema.Posts WHERE PostId = @PostId";
-            if(_dapper.ExecuteSql(sql, new {PostId = postId})) return Ok();
+        { 
+            string sql = @"EXEC TutorialAppSchema.spPosts_Delete @PostId = @PostId, @UserId = @UserId ";
+            string? userId = this.User.FindFirst("userId")?.Value;
+            if(_dapper.ExecuteSql(sql, new {PostId = postId.ToString(), UserId = userId})) return Ok();
             throw new Exception("Failed to delete post");
         }
         
