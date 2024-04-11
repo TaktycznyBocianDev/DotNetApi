@@ -51,16 +51,11 @@ namespace DotnetAPI.Controllers
 
                     byte[] passwordHash = _authHelper.GetPasswordHash(userForRegistration.Password, passwordSalt);
 
-                    string sqlAddAuth = @"
-                        INSERT INTO TutorialAppSchema.Auth(
-                            [Email],
-                            [PasswordHash],
-                            [PasswordSalt]
-                        ) VALUES (
+                    string sqlAddAuth = @" TutorialAppSchema.spRegistration_Upsert
                             @Email, 
                             @PasswordHash, 
                             @PasswordSalt
-                        )";
+                        ";
 
                     if (_dapper.ExecuteSql(sqlAddAuth, new
                     {
@@ -68,24 +63,25 @@ namespace DotnetAPI.Controllers
                         PasswordHash = passwordHash,
                         PasswordSalt = passwordSalt
                     }))
-                    {
-                        string sqlAddUser = @"
-                            INSERT INTO TutorialAppSchema.Users(
-                                [FirstName], 
-                                [LastName], 
-                                [Email], 
-                                [Gender])
-                            VALUES (@FirstName, 
-                                @LastName, 
-                                @Email, 
-                                @Gender)";
+                    {                        
+                        string sqlAddUser = @" EXEC TutorialAppSchema.spUser_Upsert
+                                @FirstName = @FirstName, 
+                                @LastName = @LastName, 
+                                @Email = @Email, 
+                                @Gender = @Gender, 
+                                @JobTitle = @JobTitle,
+                                @Department = @Department,
+                                @Salary = @Salary";
 
                         if (_dapper.ExecuteSql(sqlAddUser, new
                         {
                             FirstName = userForRegistration.FirstName,
                             LastName = userForRegistration.LastName,
                             Email = userForRegistration.Email,
-                            Gender = userForRegistration.Gender
+                            Gender = userForRegistration.Gender,
+                            JobTitle = userForRegistration.JobTitle,
+                            Department = userForRegistration.Department,
+                            Salary = userForRegistration.Salary
                         }))
                         {
 
