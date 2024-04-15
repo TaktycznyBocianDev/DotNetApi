@@ -104,7 +104,7 @@ namespace DotnetAPI.Controllers
         public IActionResult Login(UserForLoginDTO userForLogin)
         {
 
-            string sqlForHashAndSalt = @"EXECT TutorialAppSchema.spLoginConfirmation_Get Email = @email";
+            string sqlForHashAndSalt = @"EXEC TutorialAppSchema.spLoginConfirmation_Get @Email = @Email";
 
             UserForLoginConfirmationDTO userForLoginConfirmation = _dapper.LoadDataSingle<UserForLoginConfirmationDTO>(sqlForHashAndSalt, new { Email = userForLogin.Email });
 
