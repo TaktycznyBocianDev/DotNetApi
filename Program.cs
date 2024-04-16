@@ -29,8 +29,8 @@ builder.Services.AddCors((options) => {
 
 });
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        // builder.Services.AddScoped<IUserRepository, UserRepository>(); <- user with EF
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => {
         options.TokenValidationParameters = new TokenValidationParameters()
         {
